@@ -1,5 +1,7 @@
 # Social Media User Analytics!
-[sot-blog-application-analysis-end-user-experiences](https://github.com/santasish/InstagramUserAnalytics/assets/112464173/381b68c8-18b1-46a5-aedc-0166e11330b7)
+![Social Media User Analytics](https://github.com/santasish/InstagramUserAnalytics/assets/112464173/6bd7af5d-ff0e-4565-ac93-8fbe4e7158a8)
+
+
 
 This is a data analytics project done on behalf of trainity.in where we check the user engagement and other investor metrics.
 
