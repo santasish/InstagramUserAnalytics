@@ -1,0 +1,421 @@
+# A) Marketing Team
+
+#1. Rewarding Most Loyal Users
+
+SELECT id, username,DATEDIFF(NOW(), created_at) as days_joined 
+
+FROM users  
+
+ORDER BY days_joined DESC 
+
+LIMIT 5; 
+
+  
+
+/* Learnings: 
+
+1. Dealing with DateTime Attributes/Columns 
+
+2. using alias 
+
+3. Using the concept of order by in descending order  
+
+4. using limit*/ 
+
+
+#2. Finding inactive users who have never posted a single photo in the platform. 
+
+SELECT COUNT(u.id) 
+
+FROM users u 
+
+LEFT JOIN photos p ON u.id = p.user_id 
+
+WHERE p.user_id IS NULL;  
+
+-- There are 26 profiles who are registered in the 'users' table but have not posted once on the platform.
+
+SELECT 
+
+    u.id, 
+
+    u.username, 
+
+    DATEDIFF(NOW(), u.created_at) as days_joined 
+
+FROM 
+
+    users u 
+
+LEFT JOIN 
+
+    photos p ON u.id = p.user_id 
+
+WHERE 
+
+    p.user_id IS NULL 
+
+GROUP BY 
+
+    u.id, u.username 
+
+ORDER BY 
+
+    days_joined desc; 
+
+-- order by datediff() function sorts the output in a descending order of count of their days in instagram. 
+
+/* 
+
+# Using Left Join 
+
+SELECT u.id,u.username 
+
+from users u 
+
+left join photos p on u.id = p.user_id 
+
+where p.user_id is null; 
+
+  
+
+# Using Sub-Queries 
+
+SELECT 
+	u.id,
+    u.username,
+    DATEDIFF(NOW(), u.created_at) AS days_joined 
+
+FROM
+	users u 
+
+WHERE NOT EXISTS( 
+
+	SELECT user_id  
+
+	FROM photos p 
+
+	WHERE u.id=p.user_id 
+
+) 
+
+ORDER BY days_joined; 
+
+                 
+
+*/			 
+
+  
+
+/* Learnings: 
+
+1. Use of the concept of left join.  
+
+2. A result can be achieved through multiple ways. Using Sub-Queries to get the same outcome.  
+
+3. Exploring the concepts of is null/not null 
+
+4. Exploring the concept of EXISTS/NOT EXISTS in sub-queries 
+
+*/ 
+
+#3. Contest winner for the photo with the most likes
+
+SELECT  
+
+    u.id AS user_id, 
+
+    u.username AS photo_posted_by, 
+
+    DATE(u.created_at) AS user_joined_on, 
+
+    p.id AS photo_id, 
+
+    p.image_url, 
+
+    DATE(p.created_dat) AS posted_on, 
+
+    COUNT(l.photo_id) AS likes 
+
+FROM 
+
+    users u 
+
+        JOIN 
+
+    photos p ON u.id = p.user_id 
+
+        JOIN 
+
+    likes l ON p.id = l.photo_id 
+
+WHERE 
+
+    p.id = (SELECT  
+
+            photo_id 
+
+        FROM 
+
+            likes 
+
+        GROUP BY photo_id 
+
+        HAVING COUNT(photo_id) = (SELECT  
+
+                MAX(like_count_for_each_photo) 
+
+            FROM 
+
+                (SELECT  
+
+                    COUNT(photo_id) AS like_count_for_each_photo 
+
+                FROM 
+
+                    likes 
+
+                GROUP BY photo_id) AS likes_cnt)) 
+
+GROUP BY l.photo_id; 
+
+# SUB-QUERY: The subquery to find the photo with the maximum number of likes works independently as - 
+
+SELECT photo_id, COUNT(photo_id) AS count 
+
+FROM likes 
+
+GROUP BY photo_id 
+
+HAVING count = ( 
+
+SELECT MAX(like_count_for_each_photo)  
+
+FROM ( 
+
+SELECT COUNT(photo_id) AS like_count_for_each_photo  
+
+FROM likes GROUP BY photo_id) AS likes_cnt); 
+
+ -- The tags used in the most liked photo 
+
+SELECT t.tag_name  
+
+FROM tags t 
+
+JOIN photo_tags pt on t.id = pt.tag_id AND pt.photo_id = 145; 
+
+-- Number of photos posted by the user  
+
+ SELECT user_id,count(id) as number_of_posts  
+
+FROM photos  
+
+WHERE user_id IN ( 
+
+	SELECT user_id from photos where id =145); 
+    
+#4. Hashtag Researching
+
+SELECT  t.tag_name, COUNT(pt.tag_id) AS tag_count 
+
+FROM photo_tags pt 
+
+JOIN tags t ON pt.tag_id = t.id 
+
+GROUP BY pt.tag_id 
+
+ORDER BY tag_count DESC 
+
+LIMIT 5; 
+
+#5. Scheduling Ad Campaign
+
+-- Count of registrations grouped by days of the week 
+
+SELECT 
+
+    DAYNAME(created_at) AS day_of_week, 
+
+    COUNT(*) AS registrations_count 
+
+FROM 
+
+    users 
+
+GROUP BY 
+
+    day_of_week; 
+
+ -- The query retrieves the count of registrations grouped by the days of the week using the DAYNAME() function. 
+ -- It calculates the day of the week from the 'created_at' column and groups the counts accordingly.  
+
+-- Count of registrations grouped by time baskets 
+
+SELECT 
+
+    CONCAT( 
+
+        FLOOR(HOUR(created_at) / 4) * 4, 
+
+        ':00 - ', 
+
+        FLOOR(HOUR(created_at) / 4) * 4 + 3, 
+
+        ':59' 
+
+    ) AS time_basket, 
+
+    COUNT(*) AS registrations_count 
+
+FROM 
+
+    users 
+
+GROUP BY 
+
+    time_basket; 
+
+-- The query divides the 24 hours of a day into 6 time baskets of 4 hours each. 
+-- CONCAT() function is used to concatenate different expressions and generate a formatted time range for each time basket. 
+-- It uses the HOUR() function to extract the hour from the 'created_at' column. 
+-- The FLOOR() function is used to calculate the starting hour of each time basket. 
+-- The counts of registrations are then grouped based on these time baskets. 
+
+-- The result of the queries will provide the count of registrations for each day of the week and each time basket. 
+
+/* 
+
+CONCAT() function is used to concatenate different expressions and generate a formatted time range for each time basket. 
+
+The expression FLOOR(HOUR(created_at) / 4) * 4 calculates the starting hour of the time basket by dividing the hour component of the 'created_at' column by 4, rounding it down to the nearest whole number, and then multiplying it by 4. This gives us the base hour of the time basket. 
+
+The expression FLOOR(HOUR(created_at) / 4) * 4 + 3 calculates the ending hour of the time basket by adding 3 to the starting hour. This provides the upper limit of the time range. 
+
+The ':00 - ' and ':59' are static strings used to format the time range. 
+
+*/ 
+
+# B) Investor Metrics
+#1. User Engagement
+
+# Total number of photos in insta 
+
+select count(distinct id)
+from photos;                      -- There are 257 photos in instagram
+-- select count(*) from photos;
+
+# Total number of users 
+
+select count(distinct id)         -- There are 100 users in instagram
+from users;
+-- select count(*) from users;
+
+# Total number of users who have atleast posted once in instagram
+
+select count(distinct user_id)     -- No. of active users who have posted: 74
+
+from photos;
+
+# Average post for a user = 257/100. This will be used in my analysis for comparing the posts by users.
+# However I am considering the number of active users on the platform to calculate the percentage of users posting more or less than average, as 26% users are inactive or have not posted once.
+
+-- Setting the average posts per user
+SET @average_posts_per_user := ROUND((
+    SELECT COUNT(*) 
+    FROM photos
+) / (
+    SELECT COUNT(*) 
+    FROM users
+),2
+);
+
+-- Query to get user IDs, usernames, and their number of individual posts
+SELECT 
+    u.id AS user_id,
+    u.username,
+    COUNT(p.user_id) AS number_of_posts,
+    CASE 
+        WHEN COUNT(p.user_id) < @average_posts_per_user THEN 'below average'
+        WHEN COUNT(p.user_id) > @average_posts_per_user THEN 'above average'
+        ELSE 'average'
+    END AS users_posting
+FROM 
+    users u
+JOIN 
+    photos p ON u.id = p.user_id
+GROUP BY 
+    u.id, u.username
+ORDER BY 
+    number_of_posts;
+
+-- I am using the result of this query as a derived table to get the count and percentage values of the number of posts by users.
+
+
+-- Query to reflect the count and percentage of users who post 'more_than_average' and 'less_than_average'
+SELECT 
+    users_posting,
+    COUNT(*) AS count,
+    @average_posts_per_user,
+    ROUND(COUNT(*) / (SELECT COUNT(DISTINCT user_id) FROM photos) * 100,2) AS percentage
+FROM 
+    (
+        SELECT 
+            u.id AS user_id,
+            u.username,
+            COUNT(p.user_id) AS number_of_posts,
+            CASE 
+                WHEN COUNT(p.user_id) < @average_posts_per_user THEN 'less_than_average'
+                WHEN COUNT(p.user_id) > @average_posts_per_user THEN 'more_than_average'
+                ELSE 'average'
+            END AS users_posting
+        FROM 
+            users u
+        JOIN 
+            photos p ON u.id = p.user_id
+        GROUP BY 
+            u.id, u.username
+    ) AS subquery_creating_derived_table
+GROUP BY 
+    users_posting;
+
+
+-- To calculate the percentage of users posting more or less than average, we are using the number of active users and not total count of users.
+
+
+
+#2. Bot and Fake Accounts check
+
+-- Bots : one profile that has liked every single picture
+
+SELECT id, username
+FROM users
+WHERE id IN (
+    SELECT user_id
+    FROM likes
+    GROUP BY user_id
+    HAVING COUNT(DISTINCT photo_id) = (
+        SELECT COUNT(DISTINCT photo_id)              -- user_id's with count of likes = count of distinct photos in likes table. 
+        FROM likes                                   -- using scalar subquery to get the number of photos which has recieved a like in instagram.
+    )
+);
+
+
+
+SELECT 
+	COUNT(id) AS Number_of_Bots,
+    DATE_FORMAT(created_at, '%Y') AS year_joined
+FROM (
+SELECT *
+FROM users
+WHERE id IN (
+    SELECT user_id
+    FROM likes
+    GROUP BY user_id
+    HAVING COUNT(DISTINCT photo_id) = (
+        SELECT COUNT(DISTINCT photo_id)              
+        FROM likes                                   
+    ) 
+)
+) AS bots
+GROUP BY year_joined;
