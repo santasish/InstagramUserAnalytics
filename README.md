@@ -3,7 +3,6 @@
 
 
 
-This is a data analytics project done on behalf of trainity.in where we check the user engagement and other investor metrics.
 
 1. Rewarding Most Loyal Users:
 
@@ -64,6 +63,13 @@ We declared a contest winner based on the photo with the highest number of likes
 
 Investor metrics, including user engagement and the presence of bots, provided valuable insights into the overall health and authenticity of our platform. We now have a better understanding of user behavior, allowing us to make informed decisions to enhance engagement and attract more users.
 
+
+
+
 This project has been instrumental in providing actionable insights that can guide our marketing strategies, user engagement initiatives, and overall platform growth. It has helped us understand user preferences, optimize content reach, and identify potential areas for improvement. With these insights, we can create a more engaging and vibrant platform that resonates with our target audience.
+
+This is a data analytics project done on behalf of trainity.in 
+![ProjectCertificate (Trainity)](https://github.com/santasish/InstagramUserAnalytics/assets/112464173/823bc048-16b8-48d4-b647-08d457173ad9)
+
 
 In summary, the project has enabled us to reward loyal users, encourage inactive users, identify contest winners, optimize hashtag usage, determine optimal ad campaign timings, assess user engagement, and address the presence of bots. These findings empower us to make data-driven decisions that drive user engagement, improve user experience, and foster the growth of our platform.
